@@ -15,7 +15,7 @@ mem_idle = st.slider("Memory for a idle app", 0.0, 64.0, 0.2, 0.1)
 mem_active = st.slider("Memory for an active app", 0.0, 64.0, 2.0, 0.1)
 
 st.markdown("### System Specs")
-n_nodes = st.slider("Total number of nodes", 0, 10000, 300)
+n_nodes = st.slider("Total number of nodes", 0, 1000, 300)
 max_mem = st.slider("Max memory for a node", 1, 64, 16, 1)
 
 st.markdown("### Simulation Parameters")
