@@ -48,7 +48,8 @@ for _ in range(n_iter):
 
 st.markdown("## Model Output")
 st.write("Number of active apps:", n_active)
+st.write("Avg number of active apps per node:", n_active / n_nodes)
 st.write("Memory requests:", mem_requests)
 st.write("Probability that one or more apps are out of memory:", out_of_mem / n_iter)
-st.write("Packing rate:", apps_per_node)
+st.write("Packing rate (apps per node):", apps_per_node)
 
