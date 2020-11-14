@@ -31,11 +31,11 @@ apps_per_node = N_APPS // N_NODES
 # partition by number of apps per node
 def simulate():
     random.shuffle(apps)
-    out_of_mem = 0
+    out_of_mem = False
     for i in range(N_NODES):
         total_mem = sum(apps[i*apps_per_node: (i + 1)*apps_per_node])
         if total_mem > MAX_MEM:
-            out_of_mem +=1
+            out_of_mem = True
     return out_of_mem
 
 
