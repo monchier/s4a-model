@@ -25,16 +25,16 @@ n_active = int(round(n_apps * apps_active_per_day * hours_active_per_day / 8))
 
 memory = [0,]*n_nodes
 
-apps = [mem_idle,]*(n_apps-n_active) + [mem_active,]*n_active  
+apps_mems = [mem_idle,]*(n_apps-n_active) + [mem_active,]*n_active
 
 apps_per_node = n_apps // n_nodes
 
 # partition by number of apps per node
 def simulate():
-    random.shuffle(apps)
+    random.shuffle(apps_mems)
     out_of_mem = False
     for i in range(n_nodes):
-        total_mem = sum(apps[i*apps_per_node: (i + 1)*apps_per_node])
+        total_mem = sum(apps_mems[i*apps_per_node: (i + 1)*apps_per_node])
         if total_mem > MAX_MEM:
             out_of_mem = True
     return out_of_mem
