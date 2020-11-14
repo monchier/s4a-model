@@ -1,5 +1,7 @@
 import streamlit as st
 import random
+from datetime import datetime
+random.seed(datetime.now())
 
 st.title("S4A Probabilistic Cost Reduction Option Model (Option1)")
 
@@ -18,16 +20,13 @@ max_mem = st.slider("Max memory for a node", 1, 64, 16, 1)
 st.markdown("### Simulation Parameters")
 n_iter = st.slider("Number of iterations", 0, 1000, 100)
 
+#### Model ####
 
 n_active = int(round(n_apps * apps_active_per_day * hours_active_per_day / 8))
-
 memory = [0,]*n_nodes
-
 apps_mems = [mem_idle,]*(n_apps-n_active) + [mem_active,]*n_active
-
 apps_per_node = n_apps // n_nodes
-
-mem_requests = max_mem / apps_per_node 
+mem_requests = max_mem / apps_per_node
 
 # partition by number of apps per node
 def simulate():
@@ -44,6 +43,8 @@ def simulate():
 out_of_mem = 0
 for _ in range(n_iter):
     out_of_mem += simulate()
+
+#### Output ####
 
 st.markdown("## Model Output")
 st.write("Number of active apps:", n_active)
