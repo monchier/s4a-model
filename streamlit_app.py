@@ -20,7 +20,7 @@ max_mem = st.slider("Max memory for a node", 1, 64, 16, 1)
 
 st.markdown("### Simulation Parameters")
 n_iter = st.slider("Number of iterations", 0, 1000, 100)
-avg_active_per node = n_active / n_nodes
+avg_active_per_node = n_active / n_nodes
 min_cores_per_node = app_per_node * 0.05 + math.ceil(avg_active_per_node)
 
 #### Model ####
