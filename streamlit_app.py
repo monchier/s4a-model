@@ -24,12 +24,12 @@ n_iter = st.slider("Number of iterations", 0, 1000, 100)
 #### Model ####
 
 n_active = int(round(n_apps * apps_active_per_day * hours_active_per_day / 8))
-avg_active_per_node = n_active / n_nodes
-min_cores_per_node = app_per_node * 0.05 + math.ceil(avg_active_per_node)
 memory = [0,]*n_nodes
 apps_mems = [mem_idle,]*(n_apps-n_active) + [mem_active,]*n_active
 apps_per_node = n_apps // n_nodes
 mem_requests = max_mem / apps_per_node
+avg_active_per_node = n_active / n_nodes
+min_cores_per_node = apps_per_node * 0.05 + math.ceil(avg_active_per_node)
 
 # partition by number of apps per node
 def simulate():
