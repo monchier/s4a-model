@@ -1,6 +1,5 @@
 import streamlit as st
 import random
-import math
 
 st.title("S4A Probabilistic Cost Reduction Option Model (Option1)")
 
@@ -22,7 +21,7 @@ st.markdown("### Simulation Parameters")
 n_iter = st.slider("Number of iterations", 0, 10000, 100)
 
 
-n_active = int(math.round(n_apps * apps_active_per_day * hours_active_per_day / 8))
+n_active = int(round(n_apps * apps_active_per_day * hours_active_per_day / 8))
 
 memory = [0,]*n_nodes
 
