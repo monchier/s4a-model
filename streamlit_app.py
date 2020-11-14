@@ -34,7 +34,8 @@ def simulate():
     random.shuffle(apps_mems)
     out_of_mem = False
     for i in range(n_nodes):
-        total_mem = sum(apps_mems[i*apps_per_node: (i + 1)*apps_per_node])
+        node_mems = apps_mems[i*apps_per_node:(i + 1)*apps_per_node]
+        total_mem = sum(node_mems)
         if total_mem > MAX_MEM:
             out_of_mem = True
     return out_of_mem
@@ -46,6 +47,6 @@ for _ in range(n_iter):
 
 st.markdown("## Model Output")
 st.write("Number of active apps", n_active)
-st.write("P out of mem:", out_of_mem / n_iter)
+st.write("Probability that one or more apps are out of memory:", out_of_mem / n_iter)
 st.write("Packing rate:", apps_per_node)
 
