@@ -4,16 +4,20 @@ import random
 st.title("S4A Probabilistic Cost Reduction Option Model (Option1)")
 
 st.markdown("## Input Parameters")
-N_APPS = st.slider("Number of apps", 0, 100000, 10000, 100)
-N_NODES = st.slider("Number of nodes", 0, 10000, 330)
-MAX_MEM = st.slider("Max memory", 1, 64, 16, 1)
-#REQ_MEM = st.slider("Memory requests", 0.0, 64.0, 0.4, 0.1)
+st.markdown("### Apps")
+N_APPS = st.slider("Total number of apps", 0, 100000, 10000, 100)
 N_ACTIVE = st.slider("Number of active apps", 0, 10000, 300)
+mem_idle = st.slider("Memory for a idle app", 0.0, 64.0, 0.2, 0.1)
+mem_active = st.slider("Memory for an active app", 0.0, 64.0, 2.0, 0.1)
 
+st.markdown("### System Specs")
+N_NODES = st.slider("Total number of nodes", 0, 10000, 330)
+MAX_MEM = st.slider("Max memory for a node", 1, 64, 16, 1)
+#REQ_MEM = st.slider("Memory requests", 0.0, 64.0, 0.4, 0.1)
+
+st.markdown("### Simulation Parameters")
 ITER = st.slider("Number of iterations", 0, 10000, 100)
 
-mem_idle = st.slider("Mem idle", 0.0, 64.0, 0.2, 0.1)
-mem_active = st.slider("Mem active", 0.0, 64.0, 2.0, 0.1)
 
 memory = [0,]*N_NODES
 
