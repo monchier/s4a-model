@@ -1,5 +1,6 @@
 import streamlit as st
 import random
+import math
 from datetime import datetime
 random.seed(datetime.now())
 
@@ -19,6 +20,8 @@ max_mem = st.slider("Max memory for a node", 1, 64, 16, 1)
 
 st.markdown("### Simulation Parameters")
 n_iter = st.slider("Number of iterations", 0, 1000, 100)
+avg_active_per node = n_active / n_nodes
+min_cores_per_node = app_per_node * 0.05 + math.ceil(avg_active_per_node)
 
 #### Model ####
 
@@ -48,7 +51,9 @@ for _ in range(n_iter):
 
 st.markdown("## Model Output")
 st.write("Number of active apps:", n_active)
-st.write("Avg number of active apps per node:", n_active / n_nodes)
+st.write("Avg number of active apps per node:", avg_active_per_node)
+st.write("Minimum number of cores per node (suggested):", min_cores_per_node)
+st.write("Minimum number of cores per node")
 st.write("Memory requests:", mem_requests)
 st.write("Probability that one or more apps are out of memory:", out_of_mem / n_iter)
 st.write("Packing rate (apps per node):", apps_per_node)
