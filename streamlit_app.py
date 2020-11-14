@@ -36,6 +36,7 @@ def simulate():
     random.shuffle(apps_mems)
     out_of_mem = False
     for i in range(n_nodes):
+        # Is this equivalent to a greedy scheduler?
         node_mems = apps_mems[i*apps_per_node:(i + 1)*apps_per_node]
         total_mem = sum(node_mems)
         if total_mem > max_mem:
