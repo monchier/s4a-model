@@ -29,7 +29,7 @@ apps_mems = [mem_idle,]*(n_apps-n_active) + [mem_active,]*n_active
 apps_per_node = n_apps // n_nodes
 mem_requests = max_mem / apps_per_node
 avg_active_per_node = n_active / n_nodes
-min_cores_per_node = apps_per_node * 0.05 + math.ceil(avg_active_per_node)
+min_cores_per_node = math.ceil(apps_per_node * 0.05 +avg_active_per_node)
 
 # partition by number of apps per node
 def simulate():
@@ -53,7 +53,7 @@ st.markdown("## Model Output")
 st.write("Number of active apps:", n_active)
 st.write("Avg number of active apps per node:", avg_active_per_node)
 st.write("Minimum number of cores per node (suggested):", min_cores_per_node)
-st.write("Minimum number of cores per node")
+st.write("Total CPUs:", min_cores_per_node * n_nodes)
 st.write("Memory requests:", mem_requests)
 st.write("Probability that one or more apps are out of memory:", out_of_mem / n_iter)
 st.write("Packing rate (apps per node):", apps_per_node)
