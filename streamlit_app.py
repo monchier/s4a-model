@@ -1,6 +1,9 @@
 import streamlit as st
 import random
 
+st.title("S4A Probabilistic Cost Reduction Option Model (Option1)")
+
+st.markdown("# Input Parameters")
 N_APPS = st.slider("Number of apps", 0, 100000, 10000, 100)
 N_NODES = st.slider("Number of nodes", 0, 10000, 330)
 MAX_MEM = st.slider("Max memory", 1, 64, 16, 1)
@@ -36,6 +39,7 @@ out_of_mem = 0
 for _ in range(ITER):
     out_of_mem += simulate()
 
+st.markdown("# Model Output")
 st.write("P out of mem:", out_of_mem / ITER)
 st.write("Packing rate:", N_APPS / N_NODES)
 
