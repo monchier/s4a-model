@@ -25,7 +25,7 @@ per_node_system_memory = 0.5
 manager_cores_active = st.slider("Manager container active cores", 0.0, 1.0, 0.2, 0.1)
 manager_memory_active = st.slider("Manager container active memory", 0.0, 1.0, 0.5, 0.1)
 
-manager_cores_idle = st.slider("Manager container idle cores", 0.0, 1.0, 0.05, 0.1)
+manager_cores_idle = st.slider("Manager container idle cores", 0.0, 1.0, 0.05, 0.05)
 manager_memory_idle = st.slider("Manager container idle memory", 0.0, 1.0, 0.1, 0.1)
 
 st.markdown("### Simulation Parameters")
