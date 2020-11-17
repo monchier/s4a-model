@@ -41,7 +41,7 @@ apps_mems = [all_mem_app_idle,]*(n_apps-n_active) + [all_mem_app_active,]*n_acti
 mem_requests = max_mem / apps_per_node
 avg_active_per_node = n_active / n_nodes
 avg_idle_per_node = (n_apps - n_active) / n_nodes
-min_cores_per_node = math.ceil(avg_idel_per_node * (0.05 + manager_cores_idle) + avg_active_per_node * (1.0 + manager_core_active) + per_node_system_cores)
+min_cores_per_node = math.ceil(avg_idle_per_node * (0.05 + manager_cores_idle) + avg_active_per_node * (1.0 + manager_core_active) + per_node_system_cores)
 
 # partition by number of apps per node
 def simulate():
