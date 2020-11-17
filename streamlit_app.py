@@ -61,7 +61,7 @@ for _ in range(n_iter):
     out_of_mem += simulate()
 
 #### Output ####
-st.write(apps)
+st.write(apps_mems)
 st.markdown("## Model Output")
 st.write("Number of active apps:", n_active)
 st.write("Avg number of active apps per node:", avg_active_per_node)
