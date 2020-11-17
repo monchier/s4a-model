@@ -18,18 +18,30 @@ st.markdown("### System Specs")
 n_nodes = st.slider("Total number of nodes", 0, 1000, 300)
 max_mem = st.slider("Max memory for a node", 1, 64, 16, 1)
 
+per_node_system_cores = 1.0
+per_node_system_memory = 0.5
+
+manager_cores_active = 0.25
+manager_memory_active = 0.5
+
+manager_cores_idle = 0.05
+manager_memory_idle = 0.5
+
 st.markdown("### Simulation Parameters")
 n_iter = st.slider("Number of iterations", 0, 1000, 100)
 
 #### Model ####
 
+apps_per_node = n_apps // n_nodes
 n_active = int(round(n_apps * apps_active_per_day * hours_active_per_day / 8))
 memory = [0,]*n_nodes
-apps_mems = [mem_idle,]*(n_apps-n_active) + [mem_active,]*n_active
-apps_per_node = n_apps // n_nodes
+all_mem_app_idle = mem_idle + manager_memory_idle + per_node_system_memory / apps_per_node
+all_mem_app_active = mem_active + manager_memory_active + per_node_system_memory / apps_per_node
+apps_mems = [all_mem_app_idle,]*(n_apps-n_active) + [all_mem_app_active,]*n_active
 mem_requests = max_mem / apps_per_node
 avg_active_per_node = n_active / n_nodes
-min_cores_per_node = math.ceil(apps_per_node * 0.05 +avg_active_per_node)
+avg_idle_per_node = (n_apps - n_active) / n_nodes
+min_cores_per_node = math.ceil(avg_idel_per_node * (0.05 + manager_cores_idle) + avg_active_per_node * (1.0 + manager_core_active) + per_node_system_cores)
 
 # partition by number of apps per node
 def simulate():
