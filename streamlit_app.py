@@ -19,8 +19,8 @@ st.markdown("### System Specs")
 n_nodes = st.slider("Total number of nodes", 0, 1000, 300)
 max_mem = st.slider("Max memory for a node", 1, 64, 16, 1)
 
-per_node_system_cores = 1.0
-per_node_system_memory = 0.5
+per_node_system_cores = st.slider("System cores per node", 0.0, 4.0, 1.0, 0.1)
+per_node_system_memory = st.slider("System memory per node", 0.0, 1.0, 0.5, 0.1)
 
 manager_cores_active = st.slider("Manager container active cores", 0.0, 1.0, 0.2, 0.1)
 manager_memory_active = st.slider("Manager container active memory", 0.0, 1.0, 0.5, 0.1)
