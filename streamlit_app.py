@@ -23,10 +23,10 @@ per_node_system_cores = 1.0
 per_node_system_memory = 0.5
 
 manager_cores_active = 0.25
-manager_memory_active = 0.0
+manager_memory_active = 0.5
 
 manager_cores_idle = 0.05
-manager_memory_idle = 0.0
+manager_memory_idle = 0.05
 
 st.markdown("### Simulation Parameters")
 n_iter = st.slider("Number of iterations", 0, 1000, 100)
