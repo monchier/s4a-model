@@ -13,7 +13,7 @@ apps_active_per_day = st.slider("Fraction of active apps per day", 0.0, 1.0, 0.2
 hours_active_per_day = st.slider("Hours an app is active out of the 8 work hours in a day", 0.0, 8.0, 1.0, 0.1)
 mem_idle = st.slider("Memory for a idle app", 0.0, 64.0, 0.2, 0.1)
 mem_active = st.slider("Memory for an active app", 0.0, 64.0, 2.0, 0.1)
-memory_requests = st.slider("Memory Requests for an app", 0.0, 64.0, 0.2, 0.1)
+mem_requests = st.slider("Memory Requests for an app", 0.0, 64.0, 0.2, 0.1)
 
 st.markdown("### System Specs")
 n_nodes = st.slider("Total number of nodes", 0, 1000, 300)
