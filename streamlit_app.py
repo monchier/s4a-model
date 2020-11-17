@@ -51,7 +51,7 @@ def simulate():
         # Is this equivalent to a greedy scheduler?
         node_mems = apps_mems[i*apps_per_node:(i + 1)*apps_per_node]
         total_mem = sum(node_mems)
-        st.write(node_mems, total_mem)
+        st.write(len(node_mems), total_mem)
         if total_mem > max_mem:
             out_of_mem = True
     return out_of_mem
@@ -62,7 +62,6 @@ for _ in range(n_iter):
     out_of_mem += simulate()
 
 #### Output ####
-st.write(apps_mems)
 st.markdown("## Model Output")
 st.write("Number of active apps:", n_active)
 st.write("Avg number of active apps per node:", avg_active_per_node)
