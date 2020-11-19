@@ -171,40 +171,44 @@ def draw_nodes(nodes, elements):
     # Highlights when out of capacity
     # Can I better visualize the change in number of nodes?
 
-    tmp = [n.mem_components for n in nodes]
-    exceeds_mem = [(i, n.exceeds_mem()) for i, n in enumerate(nodes)]
+    def compute(x, e):
+        if e:
+            return x
+        return 0
+    tmp = [(n.mem_components, n.exceeds_mem(), compute(n.mem, n.exceeds_mem())) for n in nodes]
     mems = []
     for i, r in enumerate(tmp):
-        for j, e in enumerate(r):
-            mems.append((i, *e, j))
-    df_mem = pd.DataFrame(mems, columns=['node', 'memory', 'type', 'color'])
+        for j, e in enumerate(r[0]):
+            mems.append((i, *e, j, *r[1:]))
+    df_mem = pd.DataFrame(mems, columns=['node', 'memory', 'type', 'color', 'exceeds', 'exceeded'])
     df_mem['new_type'] = df_mem['type'].apply(type_to_int) + 10*df_mem['color']
-    df_exceeds_mem = pd.DataFrame(exceeds_mem, columns=['node', 'exceeds_mem'])
 
     chart_mem = alt.Chart(df_mem).mark_bar().encode(
         x="node:O",
-        y="sum(memory):Q",
+        y=alt.Y("sum(memory):Q", scale=alt.Scale(domain=(0, max_mem), clamp=True)),
         color=alt.Color('new_type:Q', legend=None)
+
     )
     line = alt.Chart(pd.DataFrame({'y': [max_mem]})).mark_rule().encode(y='y')
-    #e_mem_chart = alt.Chart(df_exceeds_mem).mark_circle().encode(x='node:O', y='exceeds_mem:N')
-    elements[2].altair_chart(chart_mem + line, use_container_width=True)
+    ex = alt.Chart(df_mem).mark_bar().encode(x='node:O', y=alt.Y("sum(exceeded):Q", scale=alt.Scale(domain=(0, max_mem), clamp=True)), color=alt.Color('exceeds:N', legend=None))
+    elements[2].altair_chart(chart_mem + line + ex, use_container_width=True)
 
-    tmp = [n.cpu_components for n in nodes]
+    tmp = [(n.cpu_components, n.exceeds_cpu(), compute(n.mem, n.exceeds_cpu())) for n in nodes]
     cpus = []
     for i, r in enumerate(tmp):
-        for j, e in enumerate(r):
-            cpus.append((i, *e, j))
-    df_cpu = pd.DataFrame(cpus, columns=['node', 'cpu', 'type', 'color'])
+        for j, e in enumerate(r[0]):
+            cpus.append((i, *e, j, *r[1:]))
+    df_cpu = pd.DataFrame(cpus, columns=['node', 'cpu', 'type', 'color', 'exceeds', 'exceeded'])
     df_cpu['new_type'] = df_cpu['type'].apply(type_to_int) + 10*df_cpu['color']
 
     chart_cpu = alt.Chart(df_cpu).mark_bar().encode(
         x="node:O",
-        y="sum(cpu):Q",
-        color=alt.Color('new_type:Q', legend=None)
+        y=alt.Y("sum(cpu):Q", scale=alt.Scale(domain=(0, max_cpu), clamp=True)),
+        color=alt.Color('new_type:Q', legend=None),
     )
+    ex = alt.Chart(df_cpu).mark_bar().encode(x='node:O', y=alt.Y("sum(exceeded):Q", scale=alt.Scale(domain=(0, max_cpu), clamp=True)), color=alt.Color('exceeds:N', legend=None))
     line = alt.Chart(pd.DataFrame({'y': [max_mem]})).mark_rule().encode(y='y')
-    elements[3].altair_chart(chart_cpu + line, use_container_width=True)
+    elements[3].altair_chart(chart_cpu + line + ex, use_container_width=True)
 
 
 
@@ -299,3 +303,4 @@ st.write("=>", n_apps / avg_n_nodes / max_cpu)
 #TODO: stacked chart with components
 #TODO: embellish chart, add max
 # TODO: param sweep
+# TODO: fix axis, mark OOM?
