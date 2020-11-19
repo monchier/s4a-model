@@ -1,6 +1,7 @@
 import streamlit as st
 import random
 import math
+import time
 from datetime import datetime
 random.seed(datetime.now())
 
@@ -22,11 +23,11 @@ def st_grid(row_headers, column_headers, content):
             e.markdown(content[index])
             index += 1
 
-st.title("S4A Probabilistic Cost Reduction Option Model (Option1)")
+st.title("S4A Probabilistic Model")
 
 st.markdown("## Input Parameters")
 st.markdown("### Apps Ensemble")
-n_apps = st.slider("Total number of apps", 0, 100000, 10000, 100)
+n_apps = st.slider("Total number of apps", 0, 100000, 1000, 100)
 apps_active_per_day = st.slider("Fraction of active apps per day", 0.0, 1.0, 0.25, 0.05)
 hours_active_per_day = st.slider("Hours an app is active out of the 8 work hours in a day", 0.0, 8.0, 1.0, 0.1)
 
@@ -83,7 +84,7 @@ max_mem = st.slider("Max memory for a node", 1, 64, 16, 1)
 max_cpu = st.slider("Max CPU on a node", 1, 64, 4, 1)
 
 st.markdown("### Simulation Parameters")
-n_iter = st.slider("Number of iterations", 0, 100, 1)
+n_iter = st.slider("Number of iterations", 0, 100, 25)
 
 #### Model ####
 # Based on real cluster data
@@ -100,12 +101,16 @@ class Node():
         self.mem_requests = per_node_system_memory_requests
         self.cpu = per_node_system_cpu
         self.mem = per_node_system_memory
+        self.mem_components = [(per_node_system_memory, 'system')]
+        self.cpu_components = [(per_node_system_cpu, 'system')]
     def schedule(self, app):
         if self.cpu_requests + app.cpu_requests <= max_cpu and self.mem_requests + app.mem_requests <= max_mem:
             self.cpu_requests += app.cpu_requests
             self.mem_requests += app.mem_requests
             self.cpu += app.cpu
             self.mem += app.mem
+            self.mem_components.append((app.mem, app.type))
+            self.cpu_components.append((app.cpu, app.type))
             return True
         return False
     def exceeds_capacity(self):
@@ -124,37 +129,84 @@ class App():
         self.mem_requests = 0
         self.cpu = 0
         self.mem = 0
+        self.type = None
 
 
 #TODO: stacked bar graph of cpu/mem for each app
 
+def type_to_int(x):
+        if x == 'active':
+            return 0
+        if x == 'idle':
+            return 1000
+        return 2000
+
+
 def draw_nodes(nodes, elements):
-    cpus = [(i, 'cpu', n.cpu) for i, n in enumerate(nodes)]
-    mems = [(i, 'mem', n.mem) for i, n in enumerate(nodes)]
-
-    #data = cpus + mems
-
-    #df = pd.DataFrame(data, columns=['node', 'type', 'value'])
-
-    df_mem = pd.DataFrame(mems, columns=['node', 'type', 'memory'])
-    chart_mem = alt.Chart(df_mem).mark_bar().encode(
-        x="node:O",
-        y="memory:Q",
-        #color=
-    )
-    line = alt.Chart(pd.DataFrame({'y': [max_mem]})).mark_rule().encode(y='y')
-    elements[0].altair_chart(chart_mem + line, use_container_width=True)
-
-    df_cpu = pd.DataFrame(cpus, columns=['node', 'type', 'CPU'])
-    chart_cpu = alt.Chart(df_cpu).mark_bar().encode(
-        x=alt.X("node:O", axis=alt.Axis(title='Node')),
-        y="CPU:Q",
-    )
-    line = alt.Chart(pd.DataFrame({'y': [max_cpu]})).mark_rule().encode(y='y')
-    elements[1].altair_chart(chart_cpu + line, use_container_width=True)
+#    cpus = [(i, 'cpu', n.cpu, n.exceeds_cpu()) for i, n in enumerate(nodes)]
+#    mems = [(i, 'mem', n.mem, n.exceeds_mem()) for i, n in enumerate(nodes)]
+#
+#    #data = cpus + mems
+#
+#    #df = pd.DataFrame(data, columns=['node', 'type', 'value'])
+#
+#    df_mem = pd.DataFrame(mems, columns=['node', 'type', 'memory', 'exceeds_mem'])
+#    chart_mem = alt.Chart(df_mem).mark_bar().encode(
+#        x="node:O",
+#        y="memory:Q",
+#        color="exceeds_mem:N"
+#    )
+#    line = alt.Chart(pd.DataFrame({'y': [max_mem]})).mark_rule().encode(y='y')
+#    elements[0].altair_chart(chart_mem + line, use_container_width=True)
+#
+#    df_cpu = pd.DataFrame(cpus, columns=['node', 'type', 'CPU', 'exceeds_cpu'])
+#    chart_cpu = alt.Chart(df_cpu).mark_bar().encode(
+#        x=alt.X("node:O", axis=alt.Axis(title='Node')),
+#        y="CPU:Q",
+#        color="exceeds_cpu:N"
+#    )
+#    line = alt.Chart(pd.DataFrame({'y': [max_cpu]})).mark_rule().encode(y='y')
+#    elements[1].altair_chart(chart_cpu + line, use_container_width=True)
     # TODO: Make two separate charts
     # Highlights when out of capacity
     # Can I better visualize the change in number of nodes?
+
+    tmp = [n.mem_components for n in nodes]
+    exceeds_mem = [(i, n.exceeds_mem()) for i, n in enumerate(nodes)]
+    mems = []
+    for i, r in enumerate(tmp):
+        for j, e in enumerate(r):
+            mems.append((i, *e, j))
+    df_mem = pd.DataFrame(mems, columns=['node', 'memory', 'type', 'color'])
+    df_mem['new_type'] = df_mem['type'].apply(type_to_int) + 10*df_mem['color']
+    df_exceeds_mem = pd.DataFrame(exceeds_mem, columns=['node', 'exceeds_mem'])
+
+    chart_mem = alt.Chart(df_mem).mark_bar().encode(
+        x="node:O",
+        y="sum(memory):Q",
+        color=alt.Color('new_type:Q', legend=None)
+    )
+    line = alt.Chart(pd.DataFrame({'y': [max_mem]})).mark_rule().encode(y='y')
+    #e_mem_chart = alt.Chart(df_exceeds_mem).mark_circle().encode(x='node:O', y='exceeds_mem:N')
+    elements[2].altair_chart(chart_mem + line, use_container_width=True)
+
+    tmp = [n.cpu_components for n in nodes]
+    cpus = []
+    for i, r in enumerate(tmp):
+        for j, e in enumerate(r):
+            cpus.append((i, *e, j))
+    df_cpu = pd.DataFrame(cpus, columns=['node', 'cpu', 'type', 'color'])
+    df_cpu['new_type'] = df_cpu['type'].apply(type_to_int) + 10*df_cpu['color']
+
+    chart_cpu = alt.Chart(df_cpu).mark_bar().encode(
+        x="node:O",
+        y="sum(cpu):Q",
+        color=alt.Color('new_type:Q', legend=None)
+    )
+    line = alt.Chart(pd.DataFrame({'y': [max_mem]})).mark_rule().encode(y='y')
+    elements[3].altair_chart(chart_cpu + line, use_container_width=True)
+
+
 
 
 #apps_per_node = math.ceil(max_mem / mem_requests)
@@ -167,6 +219,7 @@ for i in range(n_active):
     a.mem_requests = mem_requests + manager_mem_requests
     a.cpu = cpu_active + manager_cpu_active
     a.mem = mem_active + manager_memory_active
+    a.type = 'active'
     apps.append(a)
 for i in range(n_apps - n_active):
     a = App()
@@ -174,6 +227,7 @@ for i in range(n_apps - n_active):
     a.mem_requests = mem_requests + manager_mem_requests
     a.cpu = cpu_idle + manager_cpu_idle
     a.mem = mem_idle + manager_memory_idle
+    a.type = 'idle'
     apps.append(a)
 
 def schedule(app, nodes):
@@ -194,6 +248,7 @@ def simulate(elements):
         success = False
         while not success:
             success = schedule(a, nodes)
+            #draw_nodes(nodes, elements)
             if not success:
                 nodes.append(Node())
     for n in nodes:
@@ -204,12 +259,11 @@ def simulate(elements):
     draw_nodes(nodes, elements)
     return out_of_mem, out_of_cpu, len(nodes)
 
-
 avg_fr_out_of_mem = 0
 avg_fr_out_of_cpu = 0
 avg_n_nodes = 0
 # FIXME: rename
-elements = [st.empty(), st.empty()]
+elements = [st.empty(), st.empty(), st.empty(), st.empty()]
 for i in range(n_iter):
     out_of_mem, out_of_cpu, n_nodes = simulate(elements)
     #st.markdown(f"#### Simulation #{i}")
@@ -218,6 +272,7 @@ for i in range(n_iter):
     avg_fr_out_of_mem += out_of_mem / n_nodes
     avg_fr_out_of_cpu += out_of_cpu / n_nodes
     avg_n_nodes += n_nodes
+    time.sleep(0.1)
 avg_n_nodes /= n_iter
 avg_fr_out_of_mem /= n_iter
 
@@ -230,14 +285,14 @@ st.write("Number of active apps:", n_active)
 #st.write("Memory requests:", mem_requests)
 #st.write("Packing rate (apps per node):", apps_per_node)
 st.markdown("## Executive Metrics")
-st.write("EV of the number of nodes (mean)", avg_n_nodes)
+st.write("EV (Expected Value) of the number of nodes:", avg_n_nodes)
 #st.write("Probability that one or more apps is either out of memory or is throttled in the cluster:")
 #st.write("=>", out_of_mem / n_iter)
 st.write("EV of the fraction of nodes out of memory")
 st.write("=>", avg_fr_out_of_mem)
 st.write("EV of the fraction of nodes out of cpu")
 st.write("=>", avg_fr_out_of_cpu)
-st.write("Packing rate (apps per CPU) - compare with current rate of 0.75")
+st.write("EV of the packing rate (apps per CPU) - compare with current rate of 0.75")
 st.write("=>", n_apps / avg_n_nodes / max_cpu)
 
 #TODO: make "memory active" stat decoupled from "core actives"
