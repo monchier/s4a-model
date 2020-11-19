@@ -23,7 +23,11 @@ def st_grid(row_headers, column_headers, content):
             e.markdown(content[index])
             index += 1
 
-st.title("S4A Probabilistic Model")
+st.title("S4A Simulation Model")
+st.markdown("This is a simulation model of S4A. The model is not time-dependent. The input of the model" + 
+            "are some statistics on how many apps and how many of these apps are active. Other input parameters are the behavior of the apps when idle and when active and the Kubernetes CPU and memory requests for app executor and app manager.")
+st.markdown("A number of simulations to run can be specified. The results are mean values computed on the results from all simulations.")
+st.markdown("The model output a graph of the cluster CPU and memory usage for each node for each simulation. Finally, it outputs the expected values for number of nodes, the fraction of nodes that had an out of memory event or where the max CPU for the node has been exceeded, and the packing rate in number of apps per node.")
 
 st.markdown("## Input Parameters")
 st.markdown("### Apps Ensemble")
