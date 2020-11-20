@@ -283,6 +283,7 @@ for i in range(n_iter):
     time.sleep(0.1)
 avg_n_nodes /= n_iter
 avg_fr_out_of_mem /= n_iter
+avg_fr_out_of_cpu /= n_iter
 
 #### Output ####
 st.markdown("## Model Output")
