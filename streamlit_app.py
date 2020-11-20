@@ -189,13 +189,13 @@ def draw_nodes(nodes, elements):
 
     chart_mem = alt.Chart(df_mem).mark_bar().encode(
         x="node:O",
-        y=alt.Y("sum(memory):Q", scale=alt.Scale(domain=(0, max_mem), clamp=True)),
+        y=alt.Y("sum(memory):Q", scale=alt.Scale(domain=(0, max_mem*1.2), clamp=True)),
         color=alt.Color('new_type:Q', legend=None)
 
     )
     line = alt.Chart(pd.DataFrame({'y': [max_mem]})).mark_rule().encode(y='y')
     ex = alt.Chart(df_mem).mark_bar().encode(x='node:O', y=alt.Y("sum(exceeded):Q", scale=alt.Scale(domain=(0, max_mem), clamp=True)), color=alt.Color('exceeds:N', legend=None))
-    elements[2].altair_chart(chart_mem + line + ex, use_container_width=True)
+    elements[2].altair_chart(chart_mem + line, use_container_width=True)
 
     tmp = [(n.cpu_components, n.exceeds_cpu(), compute(n.mem, n.exceeds_cpu())) for n in nodes]
     cpus = []
@@ -207,12 +207,12 @@ def draw_nodes(nodes, elements):
 
     chart_cpu = alt.Chart(df_cpu).mark_bar().encode(
         x="node:O",
-        y=alt.Y("sum(cpu):Q", scale=alt.Scale(domain=(0, max_cpu), clamp=True)),
+        y=alt.Y("sum(cpu):Q", scale=alt.Scale(domain=(0, max_cpu*1.2), clamp=True)),
         color=alt.Color('new_type:Q', legend=None),
     )
     ex = alt.Chart(df_cpu).mark_bar().encode(x='node:O', y=alt.Y("sum(exceeded):Q", scale=alt.Scale(domain=(0, max_cpu), clamp=True)), color=alt.Color('exceeds:N', legend=None))
-    line = alt.Chart(pd.DataFrame({'y': [max_mem]})).mark_rule().encode(y='y')
-    elements[3].altair_chart(chart_cpu + line + ex, use_container_width=True)
+    line = alt.Chart(pd.DataFrame({'y': [max_cpu]})).mark_rule().encode(y='y')
+    elements[3].altair_chart(chart_cpu + line, use_container_width=True)
 
 
 
