@@ -89,6 +89,7 @@ max_cpu = st.slider("Max CPU on a node", 1, 64, 4, 1)
 
 st.markdown("### Simulation Parameters")
 n_iter = st.slider("Number of iterations", 0, 100, 25)
+enable_shutdown_model = st.checkbox("Enable shutdown model", False)
 
 #### Model ####
 # Based on real cluster data
@@ -108,6 +109,18 @@ class Node():
         self.mem_components = [(per_node_system_memory, 'system')]
         self.cpu_components = [(per_node_system_cpu, 'system')]
     def schedule(self, app):
+        if enable_shutdown_model:
+            if self.cpu_requests + app.cpu_requests <= max_cpu and self.mem_requests + app.mem_requests <= max_mem:
+                if app.type == "active":
+                    self.cpu_requests += app.cpu_requests
+                    self.mem_requests += app.mem_requests
+                    self.cpu += app.cpu
+                    self.mem += app.mem
+                    self.mem_components.append((app.mem, app.type))
+                    self.cpu_components.append((app.cpu, app.type))
+                return True
+            return False
+
         if self.cpu_requests + app.cpu_requests <= max_cpu and self.mem_requests + app.mem_requests <= max_mem:
             self.cpu_requests += app.cpu_requests
             self.mem_requests += app.mem_requests
